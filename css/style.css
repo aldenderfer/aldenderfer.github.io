@@ -1,0 +1,119 @@
+body {
+  /*font-family:sans-serif;*/
+  font-family: 'Roboto';
+  background-color: #000;
+  color: #8090AB;
+  margin: 0px;
+  padding: 0px;
+  margin-right: 15px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+h1,h2,h3,h4,h5,h6 {
+  color: #C7DCFF;
+  text-align: center;
+}
+h1 {
+}
+a {
+  margin: 0px;
+  padding: 0px;
+  color: #FDFFD1;
+}
+
+#system {
+  position: fixed;
+  top: 0px; left: 0px; width:100%;
+  z-index: -1;
+}
+
+#container {
+  width: 1024px;
+  margin: 10px auto;
+  z-index: 100;
+  /*background-color: rgba(11,18,28,0.4);*/
+  /*border: 2px solid #0B121C;*/
+  /*border-radius: 20px;*/
+  opacity: 0;
+  display: inline-block;
+  /*text-align: left;*/
+}
+#title {
+  font: bold 80px 'PT Sans Narrow';
+  color: #8090AB;
+  text-align: center;
+  padding: 20px;
+  /*border-top-left-radius: 20px;*/
+  /*border-bottom: 2px solid #0B121C;*/
+}
+.rowleft {
+  margin: 0px;
+  padding:0px;
+  float: left;
+  width: 782px;
+
+}
+.rowright {
+  margin: 0px;
+  float: left;
+  width: 200px;
+  position: relative;
+  background-color: rgba(11,18,28,0.4);
+  border: 2px solid #0B121C;
+  border-radius: 4px;
+}
+#navlist {
+  margin: 20px;
+  margin-bottom: 40px;
+  padding: 0px;
+  width: 100%;
+  text-align: left;
+}
+#navlist a {
+  display: block;
+  padding-left: 10px;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font: 16px 'Roboto';
+  white-space: pre-wrap;
+}
+#navlist a:hover {
+  color: #C7DCFF;
+}
+#navlist p {
+  margin: 0px;
+  margin-bottom: 30px;
+  padding: 0px;
+  font: bold 36px 'PT Sans Narrow';
+}
+#rollover {
+  font-family: monospace;
+  position: absolute;
+  width: 100%;
+  margin: 0px auto;
+  bottom: 20px;
+  color: white;
+}
+#footer {
+  font-family: monospace;
+  position:   absolute;
+  width: 100%;
+  margin: 0px auto;
+  bottom: 0px;
+  color: white;
+  opacity: 0;
+}
+.section {
+  padding-top: 20px;
+  padding-bottom: 40px;
+  border-top: 2px solid #0B121C;
+}
+img {
+  margin: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+iframe {
+  border-radius: 10px;
+}

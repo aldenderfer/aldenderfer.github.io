@@ -1,7 +1,40 @@
 <!DOCTYPE html>
-<html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>kristof.is | explore</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/three.min.js"></script>
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/scrollspy.js"></script>
+    <script src="js/TrackballControls.js"></script>
+    <script src="js/Detector.js"></script>
+    <script src="js/tween.min.js"></script>
+    <script src="js/CelestialBody.js"></script> 
+    <script src="js/pageHandler.js"></script>
+  </head>
+
+  <body>
+    <div id="system"></div>
+    <div id="container"></div>
+    <div id="footer">
+        <div id="rollover"></div>
+        <!-- <p>mouse: movement | F11: fullscreen</p> -->
+    </div>
+    <script src="js/mainScript.js"></script>
+  </body>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        // $('#footer').css('opacity', 0);,
+        // $("#footer").fadeOut(10);        
+        $("#footer").fadeTo(4000,1);
+        // document.getElementById("footer").innerHTML = "Hello JavaScript!";
+    });
+  </script>
 </html>
