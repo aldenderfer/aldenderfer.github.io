@@ -1,12 +1,10 @@
 /* pageHandler.js
  * handles tweens and page-loading
- * 2014.11.02
  * kristof aldenderfer
  */
 function pageHandler(obj) {
 	tweening = true;
 	var e = document.getElementById('container');
-	console.log("obj.name:",obj.name);
 	if (obj.name == "system") { // unload page and transition back home, then show footer
 		new TWEEN.Tween(camera.target).to({
 			x: 0,
@@ -16,15 +14,24 @@ function pageHandler(obj) {
 			}).onUpdate(function() {
 				camera.lookAt(camera.target);
 			}).onComplete(function() {
+				camera.lookAt(camera.target);
+			}).start();
+
+		new TWEEN.Tween(camera.position).to({
+				x: 0,
+				y: 0,
+				z: 2000
+			},1000).easing(TWEEN.Easing.Linear.None).onUpdate(function() {
+				camera.lookAt(camera.target);
+			}).onComplete(function() {
+				camera.lookAt(camera.target);
+				tweening = false;
 				$('.nav').each(function() { //remove all scrollspy props
 					var id = $(this).attr('id');
 					$('a#'+id).css("margin-left", "0px");
 					$('a#'+id).css("border-left", "none");
 				});
-				camera.lookAt(camera.target);
-				tweening = false;
 				$("#footer").fadeIn(1000);
-				controls.enabled = true;
 			}).start();
 
 		$("#container").fadeOut(400, function() {
@@ -34,7 +41,7 @@ function pageHandler(obj) {
 	else { // hide footer, transition to body, load page
 		$("#footer").fadeOut(1000);
 		pos.setFromMatrixPosition(cameraTarget.matrixWorld);
-		var tween = new TWEEN.Tween(camera.target).to({
+		new TWEEN.Tween(camera.target).to({
 				x: pos.x,
 				y: pos.y,
 				z: pos.z
@@ -44,7 +51,7 @@ function pageHandler(obj) {
 				camera.lookAt(camera.target);
 			}).start();
 
-		var tween2 = new TWEEN.Tween(camera.position).to({
+		new TWEEN.Tween(camera.position).to({
 				x: pos.x-cameraTarget.geometry.radius*2,
 				y: pos.y-cameraTarget.geometry.radius*2,
 				z: pos.z-cameraTarget.geometry.radius*2
@@ -53,7 +60,6 @@ function pageHandler(obj) {
 			}).onComplete(function() {
 				camera.lookAt(camera.target);
 				tweening = false;
-
 				$("#container").load("html/"+obj.name+".html", function() {
 					$('.nav').each(function() {
 						var id = $(this).attr('id');
@@ -85,7 +91,6 @@ function pageHandler(obj) {
 					});
 				});
 				$("#container").fadeTo(1000,1);
-
 			}).start();
 	}
 }

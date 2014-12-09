@@ -1,49 +1,34 @@
-/* the.system javascript control
+/* animation.js
+ * system javascript control
  * kristof aldenderfer
- * 03 november 2014
-*/
+ */
 
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-var controls;
 var camera, scene, renderer, cameraTarget, pos, tweening = false;
-var clock = new THREE.Clock();
 var mouse = new THREE.Vector2();
 var intersects, INTERSECTED;
-var system, planet, moon, particleLight;
+var system, planet, particleLight;
 
 init();
 
 function init() {
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 15000 );
-	camera.position.z = 1000;
+	camera.position.z = 2000;
 	system = new THREE.Object3D();
 	system.name="system";
-	scene.add( system );
+	scene.add(system);
 	scene.add(camera);
 	camera.target = scene.position.clone();
 	cameraTarget = system;
 
-	controls = new THREE.TrackballControls( camera );
-	controls.rotateSpeed = 2.0;
-	controls.zoomSpeed = 4.4;
-	controls.panSpeed = 0.8;
-	controls.noZoom = false;
-	controls.noPan = false;
-	controls.staticMoving = true;
-	controls.dynamicDampingFactor = 0.3;
-	controls.enabled = true;
 	mouse.x = 0; mouse.y = 0;
 
 	var planets = ["news", "projects", "services", "contact"];
 	for (var i=0 ; i<planets.length ; i++) {
 		// 							name	radius	obliquity	rotationSpeed	semiMajorAxis	orbitalInclination	orbitalSpeed
 		planet = new CelestialBody(planets[i],(Math.floor(Math.random()*40)+40),(Math.random()-0.5),(Math.random()*0.01),(200+300*i),(Math.random()-0.5),(Math.random()*0.005));
-		//for (var i=0 ; )
-		//var moon = new CelestialBody("news",(Math.floor(Math.random()*10)+10),(Math.random()),(Math.random()*0.02),(50+50*i),(Math.random()),(Math.random()*0.02));
-		//(planet.sphere()).add(moon);
-		//planet.sphere();
 		system.add(planet);
 	}
 	pos = new THREE.Vector3();
@@ -77,18 +62,9 @@ function init() {
 	lensFlare.customUpdateCallback = lensFlareUpdateCallback;
 	scene.add( lensFlare );
 
-	// meteors?
-	particleLight = new THREE.Mesh( new THREE.SphereGeometry( 4, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0xffffff } ) );
-	particleLight.position.set(100,100,100);
-	particleLight.add( new THREE.PointLight( 0xffffff, 2, 800 ) );
-	//scene.add( particleLight );
-
 	projector = new THREE.Projector();
 	renderer = new THREE.WebGLRenderer( { antialias: true, gammaInput: true, gammaOutput: true, autoClear: false, alpha: true} );
 	renderer.setSize( window.innerWidth, window.innerHeight );
-	// scene.fog = new THREE.Fog( 0x000000, 3500, 15000 );
-	// scene.fog.color.setHSL( 0.51, 0.4, 0.01 );
-	// renderer.setClearColor( scene.fog.color, 1 );
 	renderer.domElement.style.position = "relative";
 	document.getElementById('system').appendChild( renderer.domElement );
 
@@ -120,7 +96,6 @@ function onDocumentMouseDown( event ) {
 		raycast();
 		if (intersects.length > 0 ) {
 			cameraTarget = intersects[0].object;
-			controls.enabled = false;
 			pageHandler(cameraTarget);
 		}
 	}
@@ -129,7 +104,6 @@ function onWindowResize( event ) {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
-	controls.handleResize();
 }
 //=================================================================================
 function lensFlareUpdateCallback( object ) {
@@ -156,22 +130,14 @@ function raycast() {
 }
 function render() {
 	requestAnimationFrame( render );
-	// setTimeout( function() {requestAnimationFrame( render );}, 1000 / 40 );
-	var delta = clock.getDelta();
-	controls.update( delta );
 	TWEEN.update();
 	if (!tweening) {
-		for (var p of system.children) {
-			if (p instanceof CelestialBody) {
-				p.rotate();
-				p.orbit();
-				p.moons();
-			};
+		for (var child of system.children) {
+			if (child instanceof CelestialBody) {
+				child.rotate();
+				child.orbit();
+			}
 		}
-		// var timer = Date.now() * 0.0001;
-		// particleLight.position.x = Math.sin( timer * 7 ) * 1000;
-		// particleLight.position.y = Math.cos( timer * 5 ) * 1000;
-		// particleLight.position.z = Math.cos( timer * 3 ) * 1000;
 		if (cameraTarget.name!="system") {
 			pos.setFromMatrixPosition(cameraTarget.matrixWorld);
 			camera.position.x = pos.x-cameraTarget.geometry.radius*2;
@@ -183,7 +149,7 @@ function render() {
 		if (document.getElementById("container").innerHTML == "") {
 			raycast();
 			if (intersects.length > 0) {
-				if ( INTERSECTED != intersects[ 0 ].object ) {
+				if (INTERSECTED != intersects[ 0 ].object) {
 					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 					INTERSECTED = intersects[ 0 ].object;
 					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
@@ -199,5 +165,4 @@ function render() {
 		}
 	}
 	renderer.render( scene, camera );
-	// controls.update();
 }
