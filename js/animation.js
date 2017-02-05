@@ -25,7 +25,7 @@ function init() {
 
 	mouse.x = 0; mouse.y = 0;
 
-	var planets = ["news", "projects", "services", "contact"];
+	var planets = ["teaching", "projects", "services", "contact"];
 	for (var i=0 ; i<planets.length ; i++) {
 		// 							name	radius	obliquity	rotationSpeed	semiMajorAxis	orbitalInclination	orbitalSpeed
 		planet = new CelestialBody(planets[i],(Math.floor(Math.random()*40)+40),(Math.random()-0.5),(Math.random()*0.01),(200+300*i),(Math.random()-0.5),(Math.random()*0.005));
@@ -41,7 +41,7 @@ function init() {
 		object.y = 10000 * Math.sin( theta ) * Math.sin( phi );
 		object.z = 10000 * Math.cos( phi );
 		geometry.vertices.push( object );
-	}
+	} 
 	var celestialSphere = new THREE.ParticleSystem( geometry, new THREE.ParticleSystemMaterial( { color: 0x888888 } ) );
 	scene.add( celestialSphere );
 
