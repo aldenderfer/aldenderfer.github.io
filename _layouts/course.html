@@ -1,36 +1,28 @@
 ---
 layout: nil
-title: "TAC 388 Developing Connected Devices"
-course_subtitle: "An introduction to creative coding, interactive media, and experimental art."
-course_description: >
-    Learn how to conceptualize, design, fabricate, assemble, and test internet-connected devices from start to finish.
-    <br><br>
-    Tools and skills include microcontroller programming, 3D modeling, PCB design, wireless and sensor integration, and more!
-level: "Undergraduate"
-instructor: "Kristof Aldenderfer"
-contact_info: "kristof@usc.edu"
-prereqs: "TAC 348, ACAD 230, or equivalent"
 ---
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>{{ page.title }}</title>
+  <title>{{ page.course_id }}:  {{page.course_title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- External CSS -->
-  <link rel="stylesheet" href="/courses/projects.css" />
+  <link rel="stylesheet" href="/courses/course.css" />
 </head>
 
 <body>
   <main class="page">
     <header>
-      <div class="badge">Connected Devices and Making Minor</div>
-      <h1>TAC 388 - Developing Connected Devices</h1>
-      <p class="subtitle">
-        From prototype to pitch funding: building internet-connected smart devices.
-      </p>
+      {% if page.minors %}
+        <div class="badge-row">
+        {% for minor in page.minors %}
+            <span class="badge badge-minor">{{ minor }}</span>
+        {% endfor %}
+        </div>
+      {% endif %}
+      <h1>{{ page.course_id }}: {{page.course_title }}</h1>
+      <p class="subtitle">{{ page.course_subtitle }}</p>
 
         <div class="about-section">
 
@@ -56,6 +48,9 @@ prereqs: "TAC 348, ACAD 230, or equivalent"
             {% if page.contact_info %}
                 <li><strong>Contact Info:</strong> {{ page.contact_info }}</li>
             {% endif %}
+            {% if page.semester %}
+                <li><strong>Semester(s) Offered:</strong> {{ page.semester }}</li>
+            {% endif %}
             </ul>
         </div>
         </div>
@@ -66,12 +61,7 @@ prereqs: "TAC 348, ACAD 230, or equivalent"
     <section>
       <h2>Course Structure</h2>
       <p>
-        <ul>
-          <li>TAC 388 focuses on the end-to-end process of developing connected devices, from initial concept to functional prototype.</li>
-          <li>Students work either in teams or individually on a semester-long project to create a smart device that addresses a real-world problem.</li>
-          <li>Emphasis is placed on practical skills in hardware and software integration, user-centered design, and iterative development.</li>
-          <li>The course is organized around a series of milestones, including ideation and proposal, design, prototyping (fabrication, assembly, and testing), and final MVP.</li>
-        </ul>
+        {{ page.course_structure }}
       </p>
     </section>
 
@@ -86,9 +76,16 @@ prereqs: "TAC 348, ACAD 230, or equivalent"
     </p>
     <br>
 
+    <!-- <p style="font-size: 0.85rem; color: #999;">
+        Projects for this course: 
+        {% assign course_projects = site.projects | where: "course_id", page.course_id %}
+        {{ course_projects | size }}
+      </p> -->
+
         <div class="project-grid">
-        {% assign sorted_projects = site.projects | sort: "order" %}
-        {% for project in sorted_projects %}
+        {% assign course_projects = site.projects | where: "course_id", page.course_id | sort: "order" %}
+        
+        {% for project in course_projects %}
 
             {%- comment -%}
             Resolve media URL and type
