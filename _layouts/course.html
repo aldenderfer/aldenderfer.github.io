@@ -6,7 +6,7 @@ layout: nil
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>{{ page.course_id }}:  {{page.course_title }}</title>
+  <title>{{ page.course_id }}:  {{ page.course_title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/courses/course.css" />
 </head>
@@ -16,46 +16,45 @@ layout: nil
     <header>
       {% if page.minors %}
         <div class="badge-row">
-        {% for minor in page.minors %}
+          {% for minor in page.minors %}
             <span class="badge badge-minor">{{ minor }}</span>
-        {% endfor %}
+          {% endfor %}
         </div>
       {% endif %}
-      <h1>{{ page.course_id }}: {{page.course_title }}</h1>
+
+      <h1>{{ page.course_id }}: {{ page.course_title }}</h1>
       <p class="subtitle">{{ page.course_subtitle }}</p>
 
-        <div class="about-section">
+      <div class="about-section">
 
         <!-- Left column: course description -->
         <div class="about-description">
-            <h2>About the Course</h2>
-            <p>{{ page.course_description }}</p>
+          <h2>About the Course</h2>
+          <p>{{ page.course_description }}</p>
         </div>
 
         <!-- Right column: course details -->
         <div class="about-meta-card">
-            <h2>Course Details</h2>
-            <ul class="about-meta-list">
+          <h2>Course Details</h2>
+          <ul class="about-meta-list">
             {% if page.level %}
-                <li><strong>Level:</strong> {{ page.level }}</li>
+              <li><strong>Level:</strong> {{ page.level }}</li>
             {% endif %}
             {% if page.prereqs %}
-                <li><strong>Prerequisites:</strong> {{ page.prereqs }}</li>
+              <li><strong>Prerequisites:</strong> {{ page.prereqs }}</li>
             {% endif %}
             {% if page.instructor %}
-                <li><strong>Instructor:</strong> {{ page.instructor }}</li>
+              <li><strong>Instructor:</strong> {{ page.instructor }}</li>
             {% endif %}
             {% if page.contact_info %}
-                <li><strong>Contact Info:</strong> {{ page.contact_info }}</li>
+              <li><strong>Contact Info:</strong> {{ page.contact_info }}</li>
             {% endif %}
             {% if page.semester %}
-                <li><strong>Semester(s) Offered:</strong> {{ page.semester }}</li>
+              <li><strong>Semester(s) Offered:</strong> {{ page.semester }}</li>
             {% endif %}
-            </ul>
+          </ul>
         </div>
-        </div>
-
-
+      </div>
     </header>
 
     <section>
@@ -65,98 +64,102 @@ layout: nil
       </p>
     </section>
 
-
-
-
-
     <section>
       <h2>Selected Student Projects</h2>
       <p class="subtitle">
-      Note: All projects shared with permission from students.
-    </p>
-    <br>
+        Note: All projects shared with permission from students.
+      </p>
+      <br>
 
-    <!-- <p style="font-size: 0.85rem; color: #999;">
-        Projects for this course: 
-        {% assign course_projects = site.projects | where: "course_id", page.course_id %}
-        {{ course_projects | size }}
-      </p> -->
-
-        <div class="project-grid">
+      <div class="project-grid">
         {% assign course_projects = site.projects | where: "course_id", page.course_id | sort: "order" %}
-        
+
         {% for project in course_projects %}
+          <article class="project-card">
 
-            {%- comment -%}
-            Resolve media URL and type
-            {%- endcomment -%}
-            {% assign media_url = project.media_url | default: project.video_url | default: project.image_url %}
-            {% assign is_video = false %}
-            {% if project.media_type == "video" or project.video_url %}
-            {% assign is_video = true %}
-            {% endif %}
+            {% assign media_items = project.media %}
+            {% if media_items %}
+              {% assign media_count = media_items | size %}
+              <div class="project-media-strip{% if media_count == 1 %} single{% else %} multi count-{{ media_count }}{% endif %}">
+                {% for item in media_items %}
+                  {% assign item_type = item.type | default: "image" %}
+                  {% assign item_url  = item.url %}
 
-            {%- comment -%}
-            Determine thumbnail URL:
-            - If thumbnail_url is provided, use that.
-            - Else, if it's a YouTube video, build the YouTube thumbnail URL.
-            - Else, for images, just use the media_url.
-            {%- endcomment -%}
-            {% assign thumb_url = project.thumbnail_url %}
-            {% if thumb_url == nil or thumb_url == "" %}
-            {% if is_video and media_url %}
-                {% if media_url contains "youtube.com" or media_url contains "youtu.be" %}
-                {% assign yt_id = media_url %}
-                {% if yt_id contains "v=" %}
-                    {% assign yt_id = yt_id | split:"v=" | last | split:"&" | first %}
-                {% elsif yt_id contains "youtu.be/" %}
-                    {% assign yt_id = yt_id | split:"youtu.be/" | last | split:"?" | first %}
-                {% endif %}
-                {% assign thumb_url = "https://img.youtube.com/vi/" | append: yt_id | append: "/hqdefault.jpg" %}
-                {% endif %}
-            {% elsif project.media_type == "image" and media_url %}
-                {% assign thumb_url = media_url %}
-            {% endif %}
-            {% endif %}
-
-            <article class="project-card">
-            {% if media_url %}
-                <div class="project-thumb">
-                <a href="{{ media_url }}" target="_blank" rel="noopener noreferrer" class="project-thumb-link">
-                    {% if thumb_url %}
-                    <img
-                        src="{{ thumb_url }}"
-                        alt="Preview of {{ project.title }}"
-                        class="project-thumb-image"
-                        loading="lazy"
-                    />
-                    {% else %}
-                    <div class="project-thumb-placeholder">
-                        Open media
-                    </div>
+                  {% if item_url %}
+                    {%- comment -%}
+                    Determine thumbnail:
+                    - If item.thumbnail present, use it.
+                    - If video and YouTube URL, build YouTube thumbnail.
+                    - If image, use the image URL itself.
+                    {%- endcomment -%}
+                    {% assign thumb_url = item.thumbnail %}
+                    {% if thumb_url == nil or thumb_url == "" %}
+                      {% if item_type == "video" %}
+                        {% if item_url contains "youtube.com" or item_url contains "youtu.be" %}
+                          {% assign yt_id = item_url %}
+                          {% if yt_id contains "v=" %}
+                            {% assign yt_id = yt_id | split:"v=" | last | split:"&" | first %}
+                          {% elsif yt_id contains "youtu.be/" %}
+                            {% assign yt_id = yt_id | split:"youtu.be/" | last | split:"?" | first %}
+                          {% endif %}
+                          {% assign thumb_url = "https://img.youtube.com/vi/" | append: yt_id | append: "/hqdefault.jpg" %}
+                        {% endif %}
+                      {% elsif item_type == "image" %}
+                        {% assign thumb_url = item_url %}
+                      {% endif %}
                     {% endif %}
-                    {% if is_video %}
-                    <div class="project-thumb-play">
-                        ▶
+
+                    <div class="project-thumb">
+                      <a
+                        href="{{ item_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="project-thumb-link"
+                        data-media-url="{{ item_url }}"
+                        data-media-type="{{ item_type }}"
+                      >
+                        {% if thumb_url %}
+                          <img
+                            src="{{ thumb_url }}"
+                            alt="Media for {{ project.title }}{% if item.label %}: {{ item.label }}{% endif %}"
+                            class="project-thumb-image"
+                            loading="lazy"
+                          />
+                        {% else %}
+                          <div class="project-thumb-placeholder">
+                            Open media
+                          </div>
+                        {% endif %}
+                        {% if item_type == "video" %}
+                          <div class="project-thumb-play">
+                            ▶
+                          </div>
+                        {% endif %}
+                      </a>
+                      {% if item.label %}
+                        <div class="project-thumb-caption">
+                          {{ item.label }}
+                        </div>
+                      {% endif %}
                     </div>
-                    {% endif %}
-                </a>
-                </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
             {% endif %}
 
             <div class="project-body">
-                <h3 class="project-title">{{ project.title }}</h3>
-                <div class="project-meta">
+              <h3 class="project-title">{{ project.title }}</h3>
+              <div class="project-meta">
                 {{ project.semester }}{% if project.students %} · {{ project.students }}{% endif %}
-                </div>
-                <div class="project-desc">
+              </div>
+              <div class="project-desc">
                 {{ project.content | markdownify }}
-                </div>
+              </div>
             </div>
-            </article>
+          </article>
 
         {% endfor %}
-        </div>
+      </div>
     </section>
 
   </main>
