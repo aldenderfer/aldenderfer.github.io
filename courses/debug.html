@@ -1,0 +1,29 @@
+---
+layout: nil
+title: "Courses Debug"
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ page.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/courses/projects.css" />
+</head>
+<body class="page">
+  <h1>Courses Debug</h1>
+
+  <p>Total courses found: {{ site.courses | size }}</p>
+
+  <ul>
+    {% for course in site.courses %}
+      <li>
+        <strong>{{ course.title }}</strong><br />
+        course_id: {{ course.course_id }}<br />
+        URL: <a href="{{ course.url }}">{{ course.url }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
