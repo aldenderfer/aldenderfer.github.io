@@ -44,6 +44,19 @@ header {
   margin-bottom: 0.75rem;
 }
 
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* .badge-minor {
+  background: #eef4ff;
+  color: var(--accent);
+  font-size: 0.75rem;
+} */
+
 h1 {
   font-size: 2.1rem;
   margin: 0 0 0.4rem;
