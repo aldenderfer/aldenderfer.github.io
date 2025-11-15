@@ -3,8 +3,10 @@ title: "RoboPet"
 students: "Jehimi"
 course_id: "TAC-388"
 semester: "2025 Spring"
-media_type: "video" #options: "image", "video"
-media_url: "https://youtu.be/hEiIAGCWmI0"
+media:
+  - type: "video"
+    url: "https://youtu.be/hEiIAGCWmI0"
+    # label: "" # optional
 # order: 1   # optional – lets you control sorting
 ---
 
