@@ -1,0 +1,5 @@
+# directories
+_site/
+
+# files
+Gemfile.lock
