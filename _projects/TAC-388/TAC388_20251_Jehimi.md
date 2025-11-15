@@ -1,6 +1,7 @@
 ---
 title: "RoboPet"
 students: "Jehimi"
+course_id: "TAC-388"
 semester: "2025 Spring"
 media_type: "video" #options: "image", "video"
 media_url: "https://youtu.be/hEiIAGCWmI0"
