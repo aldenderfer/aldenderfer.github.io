@@ -1,4 +1,6 @@
 collections:
   projects:
-    output: false  # true if you ever want individual project pages
-    directory: courses/_projects
+    output: false # true if you ever want individual project pages
+  courses:
+    output: true
+    permalink: /courses/:name.html
