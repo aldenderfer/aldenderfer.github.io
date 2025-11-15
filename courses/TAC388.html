@@ -1,0 +1,167 @@
+---
+layout: nil
+title: "TAC 388 Developing Connected Devices"
+course_subtitle: "An introduction to creative coding, interactive media, and experimental art."
+course_description: >
+    Learn how to conceptualize, design, fabricate, assemble, and test internet-connected devices from start to finish.
+    <br><br>
+    Tools and skills include microcontroller programming, 3D modeling, PCB design, wireless and sensor integration, and more!
+level: "Undergraduate"
+instructor: "Kristof Aldenderfer"
+contact_info: "kristof@usc.edu"
+prereqs: "TAC 348, ACAD 230, or equivalent"
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>{{ page.title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="/courses/projects.css" />
+</head>
+
+<body>
+  <main class="page">
+    <header>
+      <div class="badge">Connected Devices and Making Minor</div>
+      <h1>TAC 388 - Developing Connected Devices</h1>
+      <p class="subtitle">
+        From prototype to pitch funding: building internet-connected smart devices.
+      </p>
+
+        <div class="about-section">
+
+        <!-- Left column: course description -->
+        <div class="about-description">
+            <h2>About the Course</h2>
+            <p>{{ page.course_description }}</p>
+        </div>
+
+        <!-- Right column: course details -->
+        <div class="about-meta-card">
+            <h2>Course Details</h2>
+            <ul class="about-meta-list">
+            {% if page.level %}
+                <li><strong>Level:</strong> {{ page.level }}</li>
+            {% endif %}
+            {% if page.prereqs %}
+                <li><strong>Prerequisites:</strong> {{ page.prereqs }}</li>
+            {% endif %}
+            {% if page.instructor %}
+                <li><strong>Instructor:</strong> {{ page.instructor }}</li>
+            {% endif %}
+            {% if page.contact_info %}
+                <li><strong>Contact Info:</strong> {{ page.contact_info }}</li>
+            {% endif %}
+            </ul>
+        </div>
+        </div>
+
+
+    </header>
+
+    <section>
+      <h2>Course Structure</h2>
+      <p>
+        <ul>
+          <li>TAC 388 focuses on the end-to-end process of developing connected devices, from initial concept to functional prototype.</li>
+          <li>Students work either in teams or individually on a semester-long project to create a smart device that addresses a real-world problem.</li>
+          <li>Emphasis is placed on practical skills in hardware and software integration, user-centered design, and iterative development.</li>
+          <li>The course is organized around a series of milestones, including ideation and proposal, design, prototyping (fabrication, assembly, and testing), and final MVP.</li>
+        </ul>
+      </p>
+    </section>
+
+
+
+
+
+    <section>
+      <h2>Selected Student Projects</h2>
+      <p class="subtitle">
+      Note: All projects shared with permission from students.
+    </p>
+    <br>
+
+        <div class="project-grid">
+        {% assign sorted_projects = site.projects | sort: "order" %}
+        {% for project in sorted_projects %}
+
+            {%- comment -%}
+            Resolve media URL and type
+            {%- endcomment -%}
+            {% assign media_url = project.media_url | default: project.video_url | default: project.image_url %}
+            {% assign is_video = false %}
+            {% if project.media_type == "video" or project.video_url %}
+            {% assign is_video = true %}
+            {% endif %}
+
+            {%- comment -%}
+            Determine thumbnail URL:
+            - If thumbnail_url is provided, use that.
+            - Else, if it's a YouTube video, build the YouTube thumbnail URL.
+            - Else, for images, just use the media_url.
+            {%- endcomment -%}
+            {% assign thumb_url = project.thumbnail_url %}
+            {% if thumb_url == nil or thumb_url == "" %}
+            {% if is_video and media_url %}
+                {% if media_url contains "youtube.com" or media_url contains "youtu.be" %}
+                {% assign yt_id = media_url %}
+                {% if yt_id contains "v=" %}
+                    {% assign yt_id = yt_id | split:"v=" | last | split:"&" | first %}
+                {% elsif yt_id contains "youtu.be/" %}
+                    {% assign yt_id = yt_id | split:"youtu.be/" | last | split:"?" | first %}
+                {% endif %}
+                {% assign thumb_url = "https://img.youtube.com/vi/" | append: yt_id | append: "/hqdefault.jpg" %}
+                {% endif %}
+            {% elsif project.media_type == "image" and media_url %}
+                {% assign thumb_url = media_url %}
+            {% endif %}
+            {% endif %}
+
+            <article class="project-card">
+            {% if media_url %}
+                <div class="project-thumb">
+                <a href="{{ media_url }}" target="_blank" rel="noopener noreferrer" class="project-thumb-link">
+                    {% if thumb_url %}
+                    <img
+                        src="{{ thumb_url }}"
+                        alt="Preview of {{ project.title }}"
+                        class="project-thumb-image"
+                        loading="lazy"
+                    />
+                    {% else %}
+                    <div class="project-thumb-placeholder">
+                        Open media
+                    </div>
+                    {% endif %}
+                    {% if is_video %}
+                    <div class="project-thumb-play">
+                        ▶
+                    </div>
+                    {% endif %}
+                </a>
+                </div>
+            {% endif %}
+
+            <div class="project-body">
+                <h3 class="project-title">{{ project.title }}</h3>
+                <div class="project-meta">
+                {{ project.semester }}{% if project.students %} · {{ project.students }}{% endif %}
+                </div>
+                <div class="project-desc">
+                {{ project.content | markdownify }}
+                </div>
+            </div>
+            </article>
+
+        {% endfor %}
+        </div>
+    </section>
+
+  </main>
+</body>
+</html>
