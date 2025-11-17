@@ -66,84 +66,146 @@ layout: nil
 
     <section>
       <h2>Selected Student Projects</h2>
-      <p class="subtitle">
-        Note: All projects shared with permission from students.
-      </p>
       <br>
 
       <div class="project-grid">
-        {% assign course_projects = site.projects | where: "course_id", page.course_id | sort: "order" %}
+        
+        {% assign course_projects = site.projects | where: "course_id", page.course_id %}
+        {% if course_projects == nil or course_projects.size == 0 %}
+          {% assign course_projects = site.pages | where: "course_id", page.course_id %}
+        {% endif %}
+        {% if course_projects %}
+          {% assign course_projects = course_projects | sort: "order" %}
+        {% endif %}
 
         {% for project in course_projects %}
+          {% unless project.visible == false %}
           <article class="project-card">
 
-            {% assign media_items = project.media %}
-            {% if media_items %}
-              {% assign media_count = media_items | size %}
-              <div class="project-media-strip{% if media_count == 1 %} single{% else %} multi count-{{ media_count }}{% endif %}">
-                {% for item in media_items %}
-                  {% assign item_type = item.type | default: "image" %}
-                  {% assign item_url  = item.url %}
+            {%- comment -%}
+            Build media list as: all video entries declared in front matter
+            plus any image files present in the same project directory as
+            this project's `index.md`. Images are not expected to be listed
+            in front matter anymore.
+            {%- endcomment -%}
+            {% assign video_items = project.media | where: "type", "video" %}
+            {% assign video_count = video_items | size | default: 0 %}
+            {%- comment -%}
+            Try to discover images by inspecting `site.static_files` and matching
+            against the rendered `project.url`. This is more reliable than
+            checking source `_projects` paths because `f.url` reflects Jekyll's
+            published paths.
+            {%- endcomment -%}
+            {% assign media_count = video_count %}
+            {%- comment -%}
+            Derive the project's source directory from `project.path` and count
+            image files in `site.static_files` that live in that directory.
+            This keeps all discovery logic in Liquid and does not touch
+            project markdown files.
+            {%- endcomment -%}
+            {% assign parts = project.path | split: '/' %}
+            {% assign parts_count = parts | size %}
+            {% if parts_count > 1 %}
+              {% assign dir_count = parts_count | minus: 1 %}
+              {% assign dir_parts = parts | slice: 0, dir_count %}
+              {% assign src_dir = dir_parts | join: '/' %}
+            {% else %}
+              {% assign src_dir = project.path %}
+            {% endif %}
+            {% assign pub_dir = '/' | append: src_dir | append: '/' %}
 
-                  {% if item_url %}
-                    {%- comment -%}
-                    Determine thumbnail:
-                    - If item.thumbnail present, use it.
-                    - If video and YouTube URL, build YouTube thumbnail.
-                    - If image, use the image URL itself.
-                    {%- endcomment -%}
-                    {% assign thumb_url = item.thumbnail %}
-                    {% if thumb_url == nil or thumb_url == "" %}
-                      {% if item_type == "video" %}
-                        {% if item_url contains "youtube.com" or item_url contains "youtu.be" %}
-                          {% assign yt_id = item_url %}
-                          {% if yt_id contains "v=" %}
-                            {% assign yt_id = yt_id | split:"v=" | last | split:"&" | first %}
-                          {% elsif yt_id contains "youtu.be/" %}
-                            {% assign yt_id = yt_id | split:"youtu.be/" | last | split:"?" | first %}
-                          {% endif %}
-                          {% assign thumb_url = "https://img.youtube.com/vi/" | append: yt_id | append: "/hqdefault.jpg" %}
-                        {% endif %}
-                      {% elsif item_type == "image" %}
-                        {% assign thumb_url = item_url %}
-                      {% endif %}
-                    {% endif %}
-
-                    <div class="project-thumb">
-                      <a
-                        href="{{ item_url }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="project-thumb-link"
-                        data-media-url="{{ item_url }}"
-                        data-media-type="{{ item_type }}"
-                      >
-                        {% if thumb_url %}
-                          <img
-                            src="{{ thumb_url }}"
-                            alt="Media for {{ project.title }}{% if item.label %}: {{ item.label }}{% endif %}"
-                            class="project-thumb-image"
-                            loading="lazy"
-                          />
-                        {% else %}
-                          <div class="project-thumb-placeholder">
-                            Open media
-                          </div>
-                        {% endif %}
-                        {% if item_type == "video" %}
-                          <div class="project-thumb-play">
-                            ▶
-                          </div>
-                        {% endif %}
-                      </a>
-                      {% if item.label %}
-                        <div class="project-thumb-caption">
-                          {{ item.label }}
-                        </div>
-                      {% endif %}
-                    </div>
+            {% assign image_count = 0 %}
+            {% for f in site.static_files %}
+              {% assign ext = f.extname | downcase %}
+              {% if ext == '.jpg' or ext == '.jpeg' or ext == '.png' or ext == '.gif' %}
+                {% assign rel = f.relative_path | default: '' %}
+                {% assign matched = false %}
+                {% if rel != '' %}
+                  {% if rel contains pub_dir %}
+                    {% assign matched = true %}
                   {% endif %}
+                {% endif %}
+                {% if matched == false %}
+                  {% if f.path contains src_dir %}
+                    {% assign matched = true %}
+                  {% endif %}
+                {% endif %}
+                {% if matched == true %}
+                  {% assign image_count = image_count | plus: 1 %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {% assign media_count = media_count | plus: image_count %}
+
+            {% if media_count > 0 %}
+              <div class="project-media-strip{% if media_count == 1 %} single{% else %} multi count-{{ media_count }}{% endif %}">
+
+                {%- comment -%} Render videos first {%- endcomment -%}
+                {% for item in video_items %}
+                  {% assign item_type = "video" %}
+                  {% assign item_url = item.url %}
+                  {% assign thumb_url = item.thumbnail %}
+                  {% if thumb_url == nil or thumb_url == "" %}
+                    {% if item_url contains "youtube.com" or item_url contains "youtu.be" %}
+                      {% assign yt_id = item_url %}
+                      {% if yt_id contains "v=" %}
+                        {% assign yt_id = yt_id | split:"v=" | last | split:"&" | first %}
+                      {% elsif yt_id contains "youtu.be/" %}
+                        {% assign yt_id = yt_id | split:"youtu.be/" | last | split:"?" | first %}
+                      {% endif %}
+                      {% assign thumb_url = "https://img.youtube.com/vi/" | append: yt_id | append: "/hqdefault.jpg" %}
+                    {% endif %}
+                  {% endif %}
+
+                  <div class="project-thumb">
+                    <a
+                      href="{{ item_url }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="project-thumb-link"
+                      data-media-url="{{ item_url }}"
+                      data-media-type="video"
+                    >
+                      {% if thumb_url %}
+                        <img src="{{ thumb_url }}" alt="Media for {{ project.title }}" class="project-thumb-image" loading="lazy" />
+                      {% else %}
+                        <div class="project-thumb-placeholder">Open media</div>
+                      {% endif %}
+                      <div class="project-thumb-play">▶</div>
+                    </a>
+                  </div>
                 {% endfor %}
+
+                {%- comment -%} Then render images found in the project's source directory. {%- endcomment -%}
+                    {% for f in site.static_files %}
+                      {% assign rel = f.relative_path | default: '' %}
+                      {% assign ext = f.extname | downcase %}
+                      {% if ext == '.jpg' or ext == '.jpeg' or ext == '.png' or ext == '.gif' %}
+                            {% assign matched = false %}
+                            {% if rel != '' %}
+                              {% if rel contains pub_dir %}
+                                {% assign matched = true %}
+                              {% endif %}
+                            {% endif %}
+                            {% if matched == false %}
+                              {% if f.path contains src_dir %}
+                                {% assign matched = true %}
+                              {% endif %}
+                            {% endif %}
+                            {% if matched == true %}
+                              {% assign img_url = rel %}
+                              {% if img_url == '' %}
+                                {% assign img_url = f.path | remove: site.source %}
+                              {% endif %}
+                              <div class="project-thumb">
+                                <a href="{{ img_url }}" target="_blank" rel="noopener noreferrer" class="project-thumb-link" data-media-url="{{ img_url }}" data-media-type="image">
+                                  <img src="{{ img_url }}" alt="Media for {{ project.title }}" class="project-thumb-image" loading="lazy" />
+                                </a>
+                              </div>
+                            {% endif %}
+                      {% endif %}
+                    {% endfor %}
+
               </div>
             {% endif %}
 
@@ -157,6 +219,7 @@ layout: nil
               </div>
             </div>
           </article>
+          {% endunless %}
 
         {% endfor %}
       </div>
@@ -165,3 +228,4 @@ layout: nil
   </main>
 </body>
 </html>
+
